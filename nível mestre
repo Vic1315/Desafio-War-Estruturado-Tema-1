@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// Definição da struct Territorio
+typedef struct {
+    char nome[30];
+    char cor[10];
+    int tropas;
+} Territorio;
+
+// Vetor de missões
+char* missoes[] = {
+    "Conquistar 3 territórios seguidos",
+    "Eliminar todas as tropas da cor vermelha",
+    "Conquistar o território mais forte",
+    "Destruir 5 tropas inimigas",
+    "Conquistar 2 territórios adjacentes"
+};
+
+// Função para alocar memória para a missão
+char* alocarMissao() {
+    return (char*) malloc(100 * sizeof(char));
+}
+
+// Função para atribuir uma missão ao jogador
+void atribuirMissao(char* destino, char* missoes[], int totalMissoes) {
+    srand(time(NULL));
+    int indice = rand() % totalMissoes;
+    strcpy(destino, missoes[indice]);
+}
+
+// Função para verificar se a missão foi cumprida
+int verificarMissao(char* missao, Territorio* mapa, int tamanho) {
+    // Lógica simples para verificação
+    if (strcmp(missao, "Conquistar 3 territórios seguidos") == 0) {
+        int cont = 0;
+        for (int i = 0; i < tamanho; i++) {
+            if (mapa[i].tropas > 0) {
+                cont++;
+                if (cont == 3) return 1;
+            } else {
+                cont = 0;
+            }
+        }
+    } else if (strcmp(missao, "Eliminar todas as tropas da cor vermelha") == 0) {
+        for (int i = 0; i < tamanho; i++) {
+            if (strcmp(mapa[i].cor, "vermelha") == 0 && mapa[i].tropas > 0) {
+                return 0;
+            }
+        }
+        return 1;
+    }
+    // Adicione mais condições aqui
+    return 0;
+}
+
+// Função para exibir a missão
+void exibirMissao(char* missao) {
+    printf("Missão: %s\n", missao);
+}
+
+// Função para atacar um território
+void atacar(Territorio* atacante, Territorio* defensor) {
+    srand(time(NULL));
+    int ataqueAtacante = rand() % 6 + 1;
+    int ataqueDefensor = rand() % 6 + 1;
+
+    printf("Ataque do atacante: %d\n", ataqueAtacante);
+    printf("Ataque do defensor: %d\n", ataqueDefensor);
+
+    if (ataqueAtacante > ataqueDefensor) {
+        printf("Atacante venceu!\n");
+        defensor->tropas -= atacante->tropas / 2;
+        strcpy(defensor->cor, atacante->cor);
+    } else {
+        printf("Defensor venceu!\n");
+        atacante->tropas--;
+    }
+}
+
+// Função para liberar a memória alocada
+void liberarMemoria(Territorio* mapa, char* missao) {
+    free(mapa);
+    free(missao);
+}
+
+int main() {
+    int numTerritorios;
+    printf("Informe o número de territórios: ");
+    scanf("%d", &numTerritorios);
+    getchar(); // Limpa o buffer do teclado
+
+    Territorio* territorios = (Territorio*) calloc(numTerritorios, sizeof(Territorio));
+    char* missao = alocarMissao();
+
+    atribuirMissao(missao, missoes, 5);
+    exibirMissao(missao);
+
+    // ... (restante do código)
+
+    liberarMemoria(territorios, missao);
+
+    return 0;
+}
+
